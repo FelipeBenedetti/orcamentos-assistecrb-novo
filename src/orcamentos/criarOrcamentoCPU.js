@@ -23,33 +23,48 @@ export default function CriarOrcamento() {
   const [gabineteCusto, setGabineteCusto] = useState(0);
   const [gabineteQuantidade, setGabineteQuantidade] = useState(1);
 
+  // Estados para lucro e desconto
+  const [lucro, setLucro] = useState(0);
+  const [desconto, setDesconto] = useState(0);
+
+  // Cálculo dos valores
+  const soma =
+    processadorCusto * processadorQuantidade +
+    placaMaeCusto * placaMaeQuantidade +
+    armazenamentoCusto * armazenamentoQuantidade +
+    memoriaRamCusto * memoriaRamQuantidade +
+    gabineteCusto * gabineteQuantidade;
+
+  const somaLucro = (soma * lucro) / 100;
+  const valorFinal = soma + somaLucro;
+  const somaDesconto = (desconto * valorFinal) / 100;
+  const valorAV = valorFinal + somaDesconto;
+  const valorTotal = valorFinal; // Pode renomear se preferir
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const { data, error } = await supabase
-      .from("orcamentos") // Certifique-se de que a tabela corresponda à sua estrutura
-      .insert([
-        {
-          processador,
-          processadorCusto,
-          processadorQuantidade,
-          memoriaRam,
-          memoriaRamCusto,
-          memoriaRamQuantidade,
-          placaMae,
-          placaMaeCusto,
-          placaMaeQuantidade,
-          armazenamento,
-          armazenamentoCusto,
-          armazenamentoQuantidade,
-          gabinete,
-          gabineteCusto,
-          gabineteQuantidade,
-          valorTotal,
-          valorAV,
-        },
-      ]);
+    const { data, error } = await supabase.from("orcamentos").insert([
+      {
+        processador,
+        processadorCusto,
+        processadorQuantidade,
+        memoriaRam,
+        memoriaRamCusto,
+        memoriaRamQuantidade,
+        placaMae,
+        placaMaeCusto,
+        placaMaeQuantidade,
+        armazenamento,
+        armazenamentoCusto,
+        armazenamentoQuantidade,
+        gabinete,
+        gabineteCusto,
+        gabineteQuantidade,
+        valorTotal,
+        valorAV,
+      },
+    ]);
 
     if (error) {
       console.error("Erro ao inserir", error);
@@ -76,22 +91,10 @@ export default function CriarOrcamento() {
       setGabineteCusto(0);
       setGabineteQuantidade(1);
 
-      setValorTotal(0);
-      setValorAV(0);
+      setLucro(0);
+      setDesconto(0);
     }
   };
-
-  const soma =
-    setProcessadorCusto * setProcessadorQuantidade +
-    setPlacaMaeCusto * setPlacaMaeQuantidade +
-    setArmazenamentoCusto * setArmazenamentoQuantidade +
-    setMemoriaRamCusto * setMemoriaRamQuantidade +
-    setGabineteCusto * setGabineteQuantidade;
-
-  const somaLucro = (soma * lucro) / 100;
-  const valorFinal = somaLucro + soma;
-  const somaDesconto = (desconto * valorFinal) / 100; 
-  const valorAV = valorFinal + somaDesconto;
 
   return (
     <form onSubmit={handleSubmit}>
@@ -236,21 +239,20 @@ export default function CriarOrcamento() {
       </fieldset>
 
       <fieldset>
-        <legend> Margem de lucro: </legend>
+        <legend>Margem de lucro</legend>
         <SeletorDePorcentagem
-            value={lucro}
-            onChange={(value) => ("lucro", value)}
-        /> 
+          value={lucro}
+          onChange={(value) => setLucro(value)}
+        />
       </fieldset>
 
       <fieldset>
-        <legend> Porcentagem de Desconto: </legend>
+        <legend>Porcentagem de Desconto</legend>
         <SeletorDePorcentagem
-            value={desconto}
-            onChange={(value) => ("desconto", value)}
-        /> 
+          value={desconto}
+          onChange={(value) => setDesconto(value)}
+        />
       </fieldset>
-
 
       <button type="submit">Enviar</button>
     </form>

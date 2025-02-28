@@ -1,7 +1,9 @@
+import CriarOrcamento from "./orcamentos/criarOrcamentoCPU";
+
 function App() {
   return (
-    <div className="App">
-      <header></header>
+    <div>
+      <CriarOrcamento />
     </div>
   );
 }
